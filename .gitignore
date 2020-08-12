@@ -1,0 +1,6 @@
+/dist
+/node_modules
+/img/*.jpg
+/out/*.jpg
+/out/*.webp
+/out/*.png
