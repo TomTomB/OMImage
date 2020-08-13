@@ -103,11 +103,14 @@ const outputToPath = (
   return promises;
 };
 
-const ensureDirExists = async (path: string) => {
+const getDirPath = (path: string) => {
   const subPath = path.replace(join(directoryPath, '..', 'img'), '');
 
-  const dirPath = join(directoryPath, '..', 'out', subPath);
+  return join(directoryPath, '..', 'out', subPath);
+};
 
+const ensureDirExists = async (path: string) => {
+  const dirPath = getDirPath(path);
   try {
     await fs.access(dirPath);
   } catch (error) {
@@ -123,7 +126,7 @@ const ensureDirExists = async (path: string) => {
   console.log(`Found ${paths.length} Paths!`);
 
   for (const path of paths) {
-    const dirPath = await ensureDirExists(path);
+    await ensureDirExists(path);
   }
 
   paths.forEach(async (path) => {
@@ -134,9 +137,10 @@ const ensureDirExists = async (path: string) => {
       console.log(`Found ${images.length} Image(s) [${path}]`);
     }
 
-    const dirPath = await ensureDirExists(path);
+    const dirPath = getDirPath(path);
 
     const buffers = await Promise.all(readFiles(images, path));
+    console.log(`Read ${images.length} Image(s) [${path}]`);
 
     sizes.forEach(async (size) => {
       const webpBuffers = await Promise.all(toWebp(buffers, size));
