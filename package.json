@@ -1,16 +1,15 @@
 {
-  "name": "webp-maker",
+  "name": "batch-convert-images",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "A simple tool to convert one or many source images into web optimized versions",
+  "main": "dist/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "tsc": "tsc",
     "start": "tsc && node dist/index.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "Tom-Rune Bornholdt",
+  "license": "MIT",
   "dependencies": {
     "sharp": "^0.25.4",
     "typescript": "^3.9.7"
