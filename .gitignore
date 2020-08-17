@@ -1,4 +1,6 @@
 /dist
 /node_modules
 /img/**/*.jpg
+/img/**/*.jpeg
+/img/**/*.png
 /out
