@@ -15,6 +15,9 @@ const dirs = async (path: string): Promise<string[]> =>
       ).then((results: string[]) => [].concat(path, ...results))
     : [];
 
+const deleteOut = async () =>
+  await fs.rmdir(join(__dirname, '..', 'out'), { recursive: true });
+
 const filesAtPath = async (path: string) => {
   const items = await fs.readdir(path, { withFileTypes: true });
 
@@ -30,7 +33,10 @@ const filesAtPath = async (path: string) => {
 };
 
 const filterImages = async (files: fsCallback.Dirent[]) => {
-  return files.filter((f) => extname(f.name) === ('.jpg' || '.jpeg' || '.png'));
+  return files.filter((f) => {
+    const fileExt = extname(f.name);
+    return fileExt === '.png' || fileExt === '.jpg' || fileExt === '.jpeg';
+  });
 };
 
 const readFiles = (files: fsCallback.Dirent[], path: string) => {
@@ -114,6 +120,17 @@ const ensureDirExists = async (path: string) => {
 };
 
 (async () => {
+  console.log('Cleaning up...');
+
+  try {
+    await deleteOut();
+  } catch (e) {
+    console.error(
+      'Cant delete out dir. Please remove it manually and try again!'
+    );
+    return;
+  }
+
   const paths = await dirs(directoryPath);
 
   console.log(`Found ${paths.length} Paths!`);
