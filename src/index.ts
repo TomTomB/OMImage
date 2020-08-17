@@ -2,17 +2,10 @@ import * as fsCallback from 'fs';
 import { join, extname, parse } from 'path';
 import sharp from 'sharp';
 
+import { sizes } from './config';
+
 const fs: typeof fsCallback.promises = require('fs').promises;
-
 const directoryPath = join(__dirname, '..', 'img');
-
-const sizes = [
-  { width: 360, height: 480 },
-  { width: 1080, height: 720 },
-  { width: 1920, height: 1080 },
-];
-
-let paths: string[] = [];
 
 const dirs = async (path: string): Promise<string[]> =>
   (await fs.stat(path)).isDirectory()
@@ -37,7 +30,7 @@ const filesAtPath = async (path: string) => {
 };
 
 const filterImages = async (files: fsCallback.Dirent[]) => {
-  return files.filter((f) => extname(f.name) === ('.jpg' || '.jpeg'));
+  return files.filter((f) => extname(f.name) === ('.jpg' || '.jpeg' || '.png'));
 };
 
 const readFiles = (files: fsCallback.Dirent[], path: string) => {
@@ -121,7 +114,7 @@ const ensureDirExists = async (path: string) => {
 };
 
 (async () => {
-  paths = await dirs(directoryPath);
+  const paths = await dirs(directoryPath);
 
   console.log(`Found ${paths.length} Paths!`);
 
