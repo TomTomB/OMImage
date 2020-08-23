@@ -2,7 +2,8 @@ import * as fsCallback from 'fs';
 import { join, extname, parse } from 'path';
 import sharp from 'sharp';
 
-import { sizes, fileNames } from './config';
+import { sizes, fileNames, collage } from './config';
+import { Size } from './model';
 
 const fs: typeof fsCallback.promises = require('fs').promises;
 const directoryPath = join(__dirname, '..', 'img');
@@ -88,6 +89,21 @@ const toJpg = (buffers: Buffer[], size: { width: number; height: number }) => {
   return promises;
 };
 
+const toPng = (buffers: Buffer[], size: { width: number; height: number }) => {
+  const promises: Promise<Buffer>[] = [];
+
+  buffers.forEach((buffer) => {
+    const pngPromise = sharp(buffer)
+      .resize({ width: size.width, height: size.height, fit: 'cover' })
+      .png({ quality: 50 })
+      .toBuffer();
+
+    promises.push(pngPromise);
+  });
+
+  return promises;
+};
+
 const outputToPath = (
   buffers: Buffer[],
   names: string[],
@@ -130,6 +146,13 @@ const ensureDirExists = async (path: string) => {
   return dirPath;
 };
 
+export const createComposition = (
+  imagesToComposite: sharp.OverlayOptions[]
+) => {
+  const emptyImage = sharp({ create: collage.baseImage });
+  return emptyImage.composite(imagesToComposite).webp().toBuffer();
+};
+
 (async () => {
   console.log('Cleaning up...');
 
@@ -142,64 +165,166 @@ const ensureDirExists = async (path: string) => {
     return;
   }
 
-  const paths = await dirs(directoryPath);
+  if (collage.enabled) {
+    const paths = await dirs(directoryPath);
 
-  console.log(`Found ${paths.length} Paths!`);
+    const collageSize: Size = {
+      height: collage.baseImage.height,
+      width: collage.baseImage.width,
+    };
 
-  for (const path of paths) {
-    await ensureDirExists(path);
-  }
+    console.log(`Found ${paths.length} Paths!`);
 
-  paths.forEach(async (path) => {
-    const files = await filesAtPath(path);
-    let images = await filterImages(files);
-
-    if (images.length) {
-      console.log(`Found ${images.length} Image(s) [${path}]`);
+    for (const path of paths) {
+      await ensureDirExists(path);
     }
 
-    if (fileNames.length) {
-      images = await filterByName(images, fileNames);
-      console.log(`Found ${images.length} Image(s) based on filter [${path}]`);
-    }
+    let ignorePath = false;
 
-    const dirPath = getDirPath(path);
+    paths.forEach(async (path) => {
+      const srcImageBuffers: sharp.OverlayOptions[] = [];
 
-    const buffers = await Promise.all(readFiles(images, path));
-    console.log(`Read ${images.length} Image(s) [${path}]`);
+      for (const collageSrcImage of collage.images) {
+        const filePath = join(path, collageSrcImage.inputFileName);
+        try {
+          const srcImageBuffer = await fs.readFile(filePath);
+          srcImageBuffers.push({
+            input: srcImageBuffer,
+            left: collageSrcImage.left,
+            top: collageSrcImage.top,
+          });
+        } catch (error) {
+          console.log(
+            `Could not find required image for collage! Ignoring! [${filePath}]`
+          );
 
-    sizes.forEach(async (size) => {
-      const webpBuffers = await Promise.all(toWebp(buffers, size));
+          ignorePath = true;
+          break;
+        }
+      }
 
-      await Promise.all(
-        outputToPath(
-          webpBuffers,
-          images.map((i) => i.name),
-          dirPath,
-          size,
-          '.webp'
-        )
-      );
+      if (ignorePath) {
+        ignorePath = false;
+      } else {
+        const compositionBuffer = await createComposition(srcImageBuffers);
 
-      console.log(
-        `Converted to webp [x${images.length}] [${dirPath}] [${size.width}x${size.height}]`
-      );
+        const webpBuffers = await Promise.all(
+          toWebp([compositionBuffer], collageSize)
+        );
 
-      const jpgBuffers = await Promise.all(toJpg(buffers, size));
+        const dirPath = getDirPath(path);
 
-      await Promise.all(
-        outputToPath(
-          jpgBuffers,
-          images.map((i) => i.name),
-          dirPath,
-          size,
-          '.jpeg'
-        )
-      );
+        await Promise.all(
+          outputToPath(webpBuffers, ['collage'], dirPath, collageSize, '.webp')
+        );
 
-      console.log(
-        `Converted to jpeg [x${images.length}] [${dirPath}] [${size.width}x${size.height}]`
-      );
+        console.log(
+          `Converted to webp [${dirPath}] [${collage.baseImage.width}x${collage.baseImage.height}]`
+        );
+
+        const jpgBuffers = await Promise.all(
+          toJpg([compositionBuffer], collageSize)
+        );
+
+        await Promise.all(
+          outputToPath(jpgBuffers, ['collage'], dirPath, collageSize, '.jpeg')
+        );
+
+        console.log(
+          `Converted to jpeg [${dirPath}] [${collage.baseImage.width}x${collage.baseImage.height}]`
+        );
+
+        const pngBuffers = await Promise.all(
+          toPng([compositionBuffer], collageSize)
+        );
+
+        await Promise.all(
+          outputToPath(pngBuffers, ['collage'], dirPath, collageSize, '.png')
+        );
+
+        console.log(
+          `Converted to png [${dirPath}] [${collage.baseImage.width}x${collage.baseImage.height}]`
+        );
+      }
     });
-  });
+  } else {
+    const paths = await dirs(directoryPath);
+
+    console.log(`Found ${paths.length} Paths!`);
+
+    for (const path of paths) {
+      await ensureDirExists(path);
+    }
+
+    paths.forEach(async (path) => {
+      const files = await filesAtPath(path);
+      let images = await filterImages(files);
+
+      if (images.length) {
+        console.log(`Found ${images.length} Image(s) [${path}]`);
+      }
+
+      if (fileNames.length) {
+        images = await filterByName(images, fileNames);
+        console.log(
+          `Found ${images.length} Image(s) based on filter [${path}]`
+        );
+      }
+
+      const dirPath = getDirPath(path);
+
+      const buffers = await Promise.all(readFiles(images, path));
+      console.log(`Read ${images.length} Image(s) [${path}]`);
+
+      sizes.forEach(async (size) => {
+        const webpBuffers = await Promise.all(toWebp(buffers, size));
+
+        await Promise.all(
+          outputToPath(
+            webpBuffers,
+            images.map((i) => i.name),
+            dirPath,
+            size,
+            '.webp'
+          )
+        );
+
+        console.log(
+          `Converted to webp [x${images.length}] [${dirPath}] [${size.width}x${size.height}]`
+        );
+
+        const jpgBuffers = await Promise.all(toJpg(buffers, size));
+
+        await Promise.all(
+          outputToPath(
+            jpgBuffers,
+            images.map((i) => i.name),
+            dirPath,
+            size,
+            '.jpeg'
+          )
+        );
+
+        console.log(
+          `Converted to jpeg [x${images.length}] [${dirPath}] [${size.width}x${size.height}]`
+        );
+
+        const pngBuffers = await Promise.all(toPng(buffers, size));
+
+        await Promise.all(
+          outputToPath(
+            pngBuffers,
+            images.map((i) => i.name),
+            dirPath,
+            size,
+            '.png'
+          )
+        );
+
+        console.log(
+          `Converted to png [x${images.length}] [${dirPath}] [${size.width}x${size.height}]`
+        );
+      });
+    });
+  }
 })();

@@ -1,4 +1,5 @@
 import { Size } from './model';
+import { CollageOptions } from './model/collage.model';
 
 /** The Sizes in which the source images will be outputted in pixels
  * @example
@@ -17,3 +18,21 @@ export const sizes: Size[] = [
  * ['cat'] // Only files with the word "cat" inside the filename will be converted
  */
 export const fileNames: string[] = [];
+
+/**
+ * Create a collage based on multiple files
+ * WARNING: The source files must not be bigger than the base image!
+ */
+export const collage: CollageOptions = {
+  enabled: false,
+  baseImage: {
+    width: 1000,
+    height: 1000,
+    channels: 4,
+    background: { r: 0, g: 0, b: 0, alpha: 0 },
+  },
+  images: [
+    { inputFileName: 'blue.jpg', top: 100, left: 100 },
+    { inputFileName: 'red.jpg', top: 0, left: 200 },
+  ],
+};
