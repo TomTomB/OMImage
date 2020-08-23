@@ -2,6 +2,12 @@
 
 A simple tool to convert one or many source images into web optimized versions
 
+## Features
+
+- Recursive loading of files inside sub folders
+- Support for .jpeg, .png & .webp
+- Collage mode to combine multiple images into one
+
 ## Usage
 
 1. Clone this repo
