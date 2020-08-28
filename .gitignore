@@ -3,4 +3,7 @@
 /img/**/*.jpg
 /img/**/*.jpeg
 /img/**/*.png
+/img/**/*.pdf
 /out
+
+**/.DS_Store

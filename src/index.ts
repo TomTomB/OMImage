@@ -2,7 +2,7 @@ import * as fsCallback from 'fs';
 import { join, extname, parse } from 'path';
 import sharp from 'sharp';
 
-import { sizes, fileNames, collage } from './config';
+import { sizes, fileNames, collage, imageQuality } from './config';
 import { Size } from './model';
 
 const fs: typeof fsCallback.promises = require('fs').promises;
@@ -65,7 +65,7 @@ const toWebp = (buffers: Buffer[], size: { width: number; height: number }) => {
   buffers.forEach((buffer) => {
     const webpPromise = sharp(buffer)
       .resize({ width: size.width, height: size.height, fit: 'cover' })
-      .webp({ reductionEffort: 6, quality: 50 })
+      .webp({ reductionEffort: 6, quality: imageQuality })
       .toBuffer();
 
     promises.push(webpPromise);
@@ -80,7 +80,7 @@ const toJpg = (buffers: Buffer[], size: { width: number; height: number }) => {
   buffers.forEach((buffer) => {
     const jpgPromise = sharp(buffer)
       .resize({ width: size.width, height: size.height, fit: 'cover' })
-      .jpeg({ quality: 50 })
+      .jpeg({ quality: imageQuality })
       .toBuffer();
 
     promises.push(jpgPromise);
@@ -95,7 +95,7 @@ const toPng = (buffers: Buffer[], size: { width: number; height: number }) => {
   buffers.forEach((buffer) => {
     const pngPromise = sharp(buffer)
       .resize({ width: size.width, height: size.height, fit: 'cover' })
-      .png({ quality: 50 })
+      .png({ quality: imageQuality })
       .toBuffer();
 
     promises.push(pngPromise);
@@ -147,10 +147,27 @@ const ensureDirExists = async (path: string) => {
 };
 
 export const createComposition = (
-  imagesToComposite: sharp.OverlayOptions[]
+  imagesToComposite: sharp.OverlayOptions[],
+  forceNoAlpha?: boolean
 ) => {
-  const emptyImage = sharp({ create: collage.baseImage });
-  return emptyImage.composite(imagesToComposite).webp().toBuffer();
+  const configOverwrite: Partial<sharp.Create> = {};
+
+  if (forceNoAlpha) {
+    configOverwrite.channels = 3;
+    configOverwrite.background = {
+      r: collage.baseImage.background.r,
+      g: collage.baseImage.background.g,
+      b: collage.baseImage.background.b,
+    };
+  }
+
+  const emptyImage = sharp({
+    create: { ...collage.baseImage, ...configOverwrite },
+  });
+  return emptyImage
+    .composite(imagesToComposite)
+    .webp({ lossless: true, quality: 100, reductionEffort: 0 })
+    .toBuffer();
 };
 
 (async () => {
@@ -187,11 +204,21 @@ export const createComposition = (
       for (const collageSrcImage of collage.images) {
         const filePath = join(path, collageSrcImage.inputFileName);
         try {
-          const srcImageBuffer = await fs.readFile(filePath);
+          let srcImageBuffer = await fs.readFile(filePath);
+
+          if (collageSrcImage.preprocess?.resize) {
+            srcImageBuffer = await sharp(srcImageBuffer)
+              .resize(
+                collageSrcImage.preprocess.resize.width,
+                collageSrcImage.preprocess.resize.height
+              )
+              .toBuffer();
+          }
+
           srcImageBuffers.push({
             input: srcImageBuffer,
-            left: collageSrcImage.left,
-            top: collageSrcImage.top,
+            left: collageSrcImage.left ?? 0,
+            top: collageSrcImage.top ?? 0,
           });
         } catch (error) {
           console.log(
@@ -215,19 +242,36 @@ export const createComposition = (
         const dirPath = getDirPath(path);
 
         await Promise.all(
-          outputToPath(webpBuffers, ['collage'], dirPath, collageSize, '.webp')
+          outputToPath(
+            webpBuffers,
+            [collage.outputName],
+            dirPath,
+            collageSize,
+            '.webp'
+          )
         );
 
         console.log(
           `Converted to webp [${dirPath}] [${collage.baseImage.width}x${collage.baseImage.height}]`
         );
 
+        const compositionJpgBuffer = await createComposition(
+          srcImageBuffers,
+          true
+        );
+
         const jpgBuffers = await Promise.all(
-          toJpg([compositionBuffer], collageSize)
+          toJpg([compositionJpgBuffer], collageSize)
         );
 
         await Promise.all(
-          outputToPath(jpgBuffers, ['collage'], dirPath, collageSize, '.jpeg')
+          outputToPath(
+            jpgBuffers,
+            [collage.outputName],
+            dirPath,
+            collageSize,
+            '.jpeg'
+          )
         );
 
         console.log(
@@ -239,7 +283,13 @@ export const createComposition = (
         );
 
         await Promise.all(
-          outputToPath(pngBuffers, ['collage'], dirPath, collageSize, '.png')
+          outputToPath(
+            pngBuffers,
+            [collage.outputName],
+            dirPath,
+            collageSize,
+            '.png'
+          )
         );
 
         console.log(

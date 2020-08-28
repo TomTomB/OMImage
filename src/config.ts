@@ -12,6 +12,11 @@ export const sizes: Size[] = [
 ];
 
 /**
+ * Determine the image quality (0 - 100). Higher is better
+ */
+export const imageQuality = 85;
+
+/**
  * Determines which files will be converted.
  * If empty, all images inside the img dir will be converted
  * @example
@@ -24,15 +29,23 @@ export const fileNames: string[] = [];
  * WARNING: The source files must not be bigger than the base image!
  */
 export const collage: CollageOptions = {
-  enabled: false,
+  enabled: true,
   baseImage: {
-    width: 1000,
-    height: 1000,
+    width: 330,
+    height: 200,
     channels: 4,
-    background: { r: 0, g: 0, b: 0, alpha: 0 },
+    background: { r: 255, g: 255, b: 255, alpha: 0 },
   },
+  outputName: 'preview-case',
   images: [
-    { inputFileName: 'blue.jpg', top: 100, left: 100 },
-    { inputFileName: 'red.jpg', top: 0, left: 200 },
+    {
+      inputFileName: '04-preview-case-xbox_front.png',
+      preprocess: { resize: { height: 200 } },
+    },
+    {
+      inputFileName: '02-mockup-case-ps4_front.png',
+      left: 175,
+      preprocess: { resize: { height: 200 } },
+    },
   ],
 };

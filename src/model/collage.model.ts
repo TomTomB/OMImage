@@ -1,3 +1,5 @@
+import { Size } from './size.model';
+
 export interface CollageOptions {
   enabled: boolean;
   baseImage: {
@@ -11,5 +13,11 @@ export interface CollageOptions {
       alpha?: number;
     };
   };
-  images: { inputFileName: string; top: number; left: number }[];
+  outputName: string;
+  images: {
+    inputFileName: string;
+    top?: number;
+    left?: number;
+    preprocess?: { resize?: Partial<Size> };
+  }[];
 }
