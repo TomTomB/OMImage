@@ -1,5 +1,6 @@
 import { OMFile } from '../model/oh-my-image.model';
 import { SourceSetOptions } from '../model/source-set.model';
+import { logTaskEnd, logTaskStart, TaskCycleType } from './core';
 import { outputOMFilesAt } from './core/node';
 import {
   filterByAllowList,
@@ -13,11 +14,15 @@ export const createSourceSet = async ({
   options,
   files,
   workingDirectory,
+  taskName,
 }: {
   options: SourceSetOptions;
   files: OMFile[];
   workingDirectory: string;
+  taskName: string;
 }) => {
+  logTaskStart(TaskCycleType.Main, taskName);
+
   let filesInner = files;
 
   if (options.allowList) {
@@ -27,6 +32,7 @@ export const createSourceSet = async ({
   }
 
   if (!files.length) {
+    logTaskEnd(TaskCycleType.Main, taskName);
     return;
   }
 
@@ -70,4 +76,5 @@ export const createSourceSet = async ({
   }
 
   await Promise.all(outputOMFilesAt(outputFiles, workingDirectory));
+  logTaskEnd(TaskCycleType.Main, taskName);
 };

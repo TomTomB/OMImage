@@ -16,18 +16,15 @@ export const logVerbose = (message: string) => {
 
 export const logTaskStart = (type: TaskCycleType, message: string) => {
   const logMessage = `[${type}::START] ${message}`;
-  console.time(message);
   console.log(logMessage);
 };
 
 export const logTaskFail = (type: TaskCycleType, message: string) => {
   const logMessage = `[${type}::FAIL] ${message}`;
-  console.timeEnd(message);
   console.log(logMessage);
 };
 
 export const logTaskEnd = (type: TaskCycleType, message: string) => {
   const logMessage = `[${type}::END] ${message}`;
-  console.timeEnd(message);
   console.log(logMessage);
 };

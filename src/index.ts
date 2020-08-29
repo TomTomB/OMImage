@@ -80,6 +80,7 @@ import { OMFile } from './model/oh-my-image.model';
           options: task.params,
           files: taskFiles,
           workingDirectory: directory,
+          taskName: task.name,
         })
       );
     }
