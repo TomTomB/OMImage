@@ -1,13 +1,19 @@
-import { ImageType } from './image.model';
+import { JpegOptions, PngOptions, WebpOptions } from 'sharp';
 import { Size } from './size.model';
 
 export interface SourceSetOptions {
   outputFormats?: {
-    [key in ImageType]: {
-      quality: number;
-    };
+    jpg?: JPGOptions;
+    png?: PNGOptions;
+    webp?: WebPOptions;
   };
   allowList?: string[];
   ignoreList?: string[];
   sizes: Partial<Size>[];
 }
+
+export interface JPGOptions extends JpegOptions {}
+
+export interface PNGOptions extends PngOptions {}
+
+export interface WebPOptions extends WebpOptions {}

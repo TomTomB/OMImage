@@ -1,11 +1,14 @@
-# Batch convert Images
+# OMImage - Oh My Image
 
-A simple tool to convert one or many source images into web optimized versions
+Image manipulation & optimization tools
 
 ## Features
 
 - Recursive loading of files inside sub folders
-- Support for .jpeg, .png & .webp
+- Support for .jpg, .png & .webp
+- Task queue to chain multiple tasks
+- Allow list & ignore list to convert only specific images within a task
+- Source set generation
 - Collage mode to combine multiple images into one
 
 ## Usage
@@ -16,4 +19,4 @@ A simple tool to convert one or many source images into web optimized versions
 4. Adjust the `config.ts` file inside the `src` directory to your liking
 5. Run `npm start`
 
-The output will be saved inside the `out` folder. By default `webp` & `jpeg` versions will be created in different sizes
+The output will be saved inside the `out` folder.

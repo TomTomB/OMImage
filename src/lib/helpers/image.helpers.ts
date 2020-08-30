@@ -2,18 +2,23 @@ import sharp from 'sharp';
 import { toFilename } from '.';
 import { Size } from '../../model';
 import { OMFile } from '../../model/oh-my-image.model';
+import {
+  JPGOptions,
+  PNGOptions,
+  WebPOptions,
+} from '../../model/source-set.model';
 
 const toWebPicture = (
   buffers: Buffer[],
   size: Partial<Size>,
-  quality?: number
+  options?: WebPOptions
 ) => {
   const promises: Promise<Buffer>[] = [];
 
   buffers.forEach((buffer) => {
     const webpPromise = sharp(buffer)
       .resize({ width: size.width, height: size.height, fit: 'cover' })
-      .webp({ reductionEffort: 6, quality: quality ?? 50 })
+      .webp(options)
       .toBuffer();
 
     promises.push(webpPromise);
@@ -25,13 +30,13 @@ const toWebPicture = (
 export const webP = async (
   size: Partial<Size>,
   files: OMFile[],
-  quality?: number
+  options?: WebPOptions
 ) => {
   const webPictureBuffers = await Promise.all(
     toWebPicture(
       files.map((f) => f.buffer),
       size,
-      quality
+      options
     )
   );
 
@@ -47,13 +52,17 @@ export const webP = async (
   return outputFiles;
 };
 
-const toPNG = (buffers: Buffer[], size: Partial<Size>, quality?: number) => {
+const toPNG = (
+  buffers: Buffer[],
+  size: Partial<Size>,
+  options?: PNGOptions
+) => {
   const promises: Promise<Buffer>[] = [];
 
   buffers.forEach((buffer) => {
     const webpPromise = sharp(buffer)
       .resize({ width: size.width, height: size.height, fit: 'cover' })
-      .png({ quality: quality ?? 50 })
+      .png(options)
       .toBuffer();
 
     promises.push(webpPromise);
@@ -65,13 +74,13 @@ const toPNG = (buffers: Buffer[], size: Partial<Size>, quality?: number) => {
 export const png = async (
   size: Partial<Size>,
   files: OMFile[],
-  quality?: number
+  options?: PNGOptions
 ) => {
   const pngBuffers = await Promise.all(
     toPNG(
       files.map((f) => f.buffer),
       size,
-      quality
+      options
     )
   );
 
@@ -87,13 +96,17 @@ export const png = async (
   return outputFiles;
 };
 
-const toJPG = (buffers: Buffer[], size: Partial<Size>, quality?: number) => {
+const toJPG = (
+  buffers: Buffer[],
+  size: Partial<Size>,
+  options?: JPGOptions
+) => {
   const promises: Promise<Buffer>[] = [];
 
   buffers.forEach((buffer) => {
     const webpPromise = sharp(buffer)
       .resize({ width: size.width, height: size.height, fit: 'cover' })
-      .jpeg({ quality: quality ?? 50 })
+      .jpeg(options)
       .toBuffer();
 
     promises.push(webpPromise);
@@ -105,13 +118,13 @@ const toJPG = (buffers: Buffer[], size: Partial<Size>, quality?: number) => {
 export const jpg = async (
   size: Partial<Size>,
   files: OMFile[],
-  quality?: number
+  options?: JPGOptions
 ) => {
   const jpgBuffers = await Promise.all(
     toJPG(
       files.map((f) => f.buffer),
       size,
-      quality
+      options
     )
   );
 

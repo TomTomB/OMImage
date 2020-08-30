@@ -89,6 +89,7 @@ export const mainTasks: Task[] = [
       outputFormats: {
         png: { quality: 5 },
         webp: { quality: 5 },
+        jpg: { quality: 100 },
       },
     } as SourceSetOptions,
   },

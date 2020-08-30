@@ -1,7 +1,7 @@
 {
   "name": "omimage",
   "version": "3.0.0",
-  "description": "A simple tool to convert one or many source images into web optimized versions",
+  "description": "Image manipulation & optimization tools",
   "main": "dist/index.js",
   "scripts": {
     "tsc": "tsc",
@@ -10,7 +10,7 @@
   "author": "Tom-Rune Bornholdt",
   "license": "MIT",
   "dependencies": {
-    "sharp": "^0.25.4",
+    "sharp": "^0.26.0",
     "typescript": "^4.0.2"
   },
   "devDependencies": {

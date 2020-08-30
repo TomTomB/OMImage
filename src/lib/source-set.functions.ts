@@ -21,7 +21,7 @@ export const createSourceSet = async ({
   workingDirectory: string;
   taskName: string;
 }) => {
-  logTaskStart(TaskCycleType.Main, taskName);
+  logTaskStart(TaskCycleType.SourceSet, taskName);
 
   let filesInner = files;
 
@@ -32,7 +32,7 @@ export const createSourceSet = async ({
   }
 
   if (!files.length) {
-    logTaskEnd(TaskCycleType.Main, taskName);
+    logTaskEnd(TaskCycleType.SourceSet, taskName);
     return;
   }
 
@@ -40,27 +40,15 @@ export const createSourceSet = async ({
   if (options.outputFormats) {
     for (const size of options.sizes) {
       if (options.outputFormats.webp) {
-        const files = await webP(
-          size,
-          filesInner,
-          options.outputFormats.webp.quality
-        );
+        const files = await webP(size, filesInner, options.outputFormats.webp);
         outputFiles.push(...files);
       }
       if (options.outputFormats.png) {
-        const files = await png(
-          size,
-          filesInner,
-          options.outputFormats.png.quality
-        );
+        const files = await png(size, filesInner, options.outputFormats.png);
         outputFiles.push(...files);
       }
       if (options.outputFormats.jpg) {
-        const files = await jpg(
-          size,
-          filesInner,
-          options.outputFormats.jpg.quality
-        );
+        const files = await jpg(size, filesInner, options.outputFormats.jpg);
         outputFiles.push(...files);
       }
     }
@@ -75,6 +63,6 @@ export const createSourceSet = async ({
     }
   }
 
-  await Promise.all(outputOMFilesAt(outputFiles, workingDirectory));
-  logTaskEnd(TaskCycleType.Main, taskName);
+  logTaskEnd(TaskCycleType.SourceSet, taskName);
+  return Promise.all(outputOMFilesAt(outputFiles, workingDirectory));
 };

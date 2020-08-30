@@ -73,6 +73,11 @@ import { OMFile } from './model/oh-my-image.model';
       });
     }
 
+    logTaskStart(
+      TaskCycleType.Main,
+      `${mainTasks.length} Tasks (${directory})`
+    );
+
     const tasks: Promise<any>[] = [];
     for (const task of mainTasks) {
       tasks.push(
@@ -85,7 +90,6 @@ import { OMFile } from './model/oh-my-image.model';
       );
     }
 
-    logTaskStart(TaskCycleType.Main, `${tasks.length} Tasks (${directory})`);
     try {
       await Promise.all(tasks);
     } catch (e) {
