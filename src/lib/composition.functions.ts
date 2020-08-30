@@ -17,16 +17,16 @@ export const createComposition = async ({
 }) => {
   logTaskStart(TaskCycleType.Composition, taskName);
 
-  const collageSize: Size = {
+  const compositionSize: Size = {
     height: options.baseImage.height,
     width: options.baseImage.width,
   };
 
   const srcImageBuffers: sharp.OverlayOptions[] = [];
 
-  for (const collageSrcImage of options.images) {
+  for (const compositionSrcImage of options.images) {
     const sourceFile = files.find(
-      (file) => file.name === collageSrcImage.inputFileName
+      (file) => file.name === compositionSrcImage.inputFileName
     );
 
     if (!sourceFile) {
@@ -36,19 +36,19 @@ export const createComposition = async ({
 
     let srcImageBuffer = sourceFile.buffer;
 
-    if (collageSrcImage.preprocess?.resize) {
+    if (compositionSrcImage.preprocess?.resize) {
       srcImageBuffer = await sharp(srcImageBuffer)
         .resize(
-          collageSrcImage.preprocess.resize.width,
-          collageSrcImage.preprocess.resize.height
+          compositionSrcImage.preprocess.resize.width,
+          compositionSrcImage.preprocess.resize.height
         )
         .toBuffer();
     }
 
     srcImageBuffers.push({
       input: srcImageBuffer,
-      left: collageSrcImage.left ?? 0,
-      top: collageSrcImage.top ?? 0,
+      left: compositionSrcImage.left ?? 0,
+      top: compositionSrcImage.top ?? 0,
     });
   }
 
@@ -74,9 +74,9 @@ export const createComposition = async ({
   const outputFiles: OMFile[] = [];
 
   const [webPFiles, pngFiles, jpgFiles] = await Promise.all([
-    webP(collageSize, [compositionImage]),
-    png(collageSize, [compositionImage]),
-    jpg(collageSize, [compositionJpgImage]),
+    webP(compositionSize, [compositionImage]),
+    png(compositionSize, [compositionImage]),
+    jpg(compositionSize, [compositionJpgImage]),
   ]);
   outputFiles.push(...webPFiles, ...pngFiles, ...jpgFiles);
 

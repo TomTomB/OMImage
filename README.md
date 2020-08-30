@@ -9,7 +9,7 @@ Image manipulation & optimization tools
 - Task queue to chain multiple tasks
 - Allow list & ignore list to convert only specific images within a task
 - Source set generation
-- Collage mode to combine multiple images into one
+- Composition mode to combine multiple images into one
 
 ## Usage
 
