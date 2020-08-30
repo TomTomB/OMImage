@@ -1,7 +1,6 @@
 import { Size } from './size.model';
 
-export interface CollageOptions {
-  enabled: boolean;
+export interface CompositionOptions {
   baseImage: {
     width: number;
     height: number;
