@@ -1,12 +1,6 @@
 import sharp from 'sharp';
 import { toFilename } from '.';
-import { Size } from '../../model';
-import { OMFile } from '../../model/oh-my-image.model';
-import {
-  JPGOptions,
-  PNGOptions,
-  WebPOptions,
-} from '../../model/source-set.model';
+import { JPGOptions, PNGOptions, WebPOptions, OMFile, Size } from '../../model';
 
 const toWebPicture = (
   buffers: Buffer[],

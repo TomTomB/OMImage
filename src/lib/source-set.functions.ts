@@ -1,5 +1,4 @@
-import { OMFile } from '../model/oh-my-image.model';
-import { SourceSetOptions } from '../model/source-set.model';
+import { SourceSetOptions, OMFile } from '../model';
 import { logTaskEnd, logTaskStart, TaskCycleType } from './core';
 import { outputOMFilesAt } from './core/node';
 import {

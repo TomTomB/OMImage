@@ -1,9 +1,6 @@
 import { clearOutDirectory } from './lib/core/node';
 import { createSourceSet } from './lib/source-set.functions';
-import { Size } from './model';
-import { CollageOptions } from './model/collage.model';
-import { SourceSetOptions } from './model/source-set.model';
-import { Task } from './model/task.model';
+import { Size, Task, CollageOptions, SourceSetOptions } from './model';
 
 /** The Sizes in which the source images will be outputted in pixels
  * @example

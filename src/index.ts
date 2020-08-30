@@ -15,7 +15,7 @@ import {
   filesToBuffer,
 } from './lib/core/node';
 import { filterByTypes } from './lib/helpers';
-import { OMFile } from './model/oh-my-image.model';
+import { OMFile } from './model';
 
 (async () => {
   logHeader('Starting Oh My Image');
@@ -51,7 +51,7 @@ import { OMFile } from './model/oh-my-image.model';
 
   for (const directory of allDirectories) {
     const sourceFiles = await filesAtPath(directory);
-    const sourceImageFiles = await filterByTypes(
+    const sourceImageFiles = filterByTypes(
       ['jpg', 'jpeg', 'png', 'webm'],
       sourceFiles
     );

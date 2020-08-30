@@ -1,8 +1,8 @@
 import * as fsCallback from 'fs';
-import { join, parse } from 'path';
+import { join } from 'path';
 
 import { fs } from '..';
-import { OMFile } from '../../../model/oh-my-image.model';
+import { OMFile } from '../../../model';
 import { outDirectory } from './path.functions';
 
 export const clearOutDirectory = async () =>
