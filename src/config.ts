@@ -1,6 +1,13 @@
+import { createComposition } from './lib';
 import { clearOutDirectory } from './lib/core/node';
 import { createSourceSet } from './lib/source-set.functions';
-import { Size, Task, CollageOptions, SourceSetOptions } from './model';
+import {
+  Size,
+  Task,
+  CollageOptions,
+  SourceSetOptions,
+  CompositionOptions,
+} from './model';
 
 /** The Sizes in which the source images will be outputted in pixels
  * @example
@@ -70,7 +77,7 @@ export const preTasks: Task[] = [
  */
 export const mainTasks: Task[] = [
   {
-    name: 'Create Source Set A',
+    name: 'Create Background Source Set',
     function: createSourceSet,
     params: {
       sizes: [{ width: 1920 }, { width: 1280 }, { width: 480 }],
@@ -78,7 +85,7 @@ export const mainTasks: Task[] = [
     } as SourceSetOptions,
   },
   {
-    name: 'Create Source Set B',
+    name: 'Create Origin Chars Source Set ',
     function: createSourceSet,
     params: {
       sizes: [{ width: 1920 }, { width: 1280 }, { width: 480 }],
@@ -90,15 +97,55 @@ export const mainTasks: Task[] = [
       },
     } as SourceSetOptions,
   },
-  // {
-  //   name: 'Create Collage B',
-  //   function: createCollage,
-  // },
-  // {
-  //   name: 'Create Collage A',
-  //   function: createCollage,
-  //   params: collage,
-  // },
+  {
+    name: 'Create a Composition',
+    function: createComposition,
+    params: {
+      baseImage: {
+        width: 500,
+        height: 200,
+        channels: 4,
+        background: { r: 255, g: 255, b: 255, alpha: 0 },
+      },
+      outputName: 'some-composition',
+      images: [
+        {
+          inputFileName: 'Hintergrund.jpg',
+          preprocess: { resize: { height: 200 } },
+        },
+        {
+          inputFileName: 'origin_chars_echse_hl.png',
+          left: 50,
+          preprocess: { resize: { height: 200 } },
+        },
+      ],
+    } as CompositionOptions,
+  },
+  {
+    name: 'Create a second Composition',
+    function: createComposition,
+    params: {
+      baseImage: {
+        width: 500,
+        height: 200,
+        channels: 4,
+        background: { r: 255, g: 255, b: 255, alpha: 0 },
+      },
+      outputName: 'some-other-composition',
+      images: [
+        {
+          inputFileName: 'Hintergrund.jpg',
+          left: 100,
+          preprocess: { resize: { height: 100 } },
+        },
+        {
+          inputFileName: 'origin_chars_echse_hl.png',
+          left: 10,
+          preprocess: { resize: { height: 150 } },
+        },
+      ],
+    } as CompositionOptions,
+  },
 ];
 
 /**

@@ -35,7 +35,7 @@ export const createSourceSet = async ({
     return;
   }
 
-  let outputFiles: OMFile[] = [];
+  const outputFiles: OMFile[] = [];
   if (options.outputFormats) {
     for (const size of options.sizes) {
       if (options.outputFormats.webp) {
@@ -62,6 +62,7 @@ export const createSourceSet = async ({
     }
   }
 
+  await Promise.all(outputOMFilesAt(outputFiles, workingDirectory));
+
   logTaskEnd(TaskCycleType.SourceSet, taskName);
-  return Promise.all(outputOMFilesAt(outputFiles, workingDirectory));
 };

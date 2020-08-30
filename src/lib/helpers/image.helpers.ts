@@ -1,6 +1,13 @@
 import sharp from 'sharp';
 import { toFilename } from '.';
-import { JPGOptions, PNGOptions, WebPOptions, OMFile, Size } from '../../model';
+import {
+  JPGOptions,
+  PNGOptions,
+  WebPOptions,
+  OMFile,
+  Size,
+  CompositionOptions,
+} from '../../model';
 
 const toWebPicture = (
   buffers: Buffer[],
@@ -132,4 +139,29 @@ export const jpg = async (
   }
 
   return outputFiles;
+};
+
+export const compositeImageBuffers = (
+  imagesToComposite: sharp.OverlayOptions[],
+  compositionOptions: CompositionOptions,
+  forceNoAlpha?: boolean
+) => {
+  const configOverwrite: Partial<sharp.Create> = {};
+
+  if (forceNoAlpha) {
+    configOverwrite.channels = 3;
+    configOverwrite.background = {
+      r: compositionOptions.baseImage.background.r,
+      g: compositionOptions.baseImage.background.g,
+      b: compositionOptions.baseImage.background.b,
+    };
+  }
+
+  const emptyImage = sharp({
+    create: { ...compositionOptions.baseImage, ...configOverwrite },
+  });
+  return emptyImage
+    .composite(imagesToComposite)
+    .webp({ lossless: true, quality: 100, reductionEffort: 0 })
+    .toBuffer();
 };

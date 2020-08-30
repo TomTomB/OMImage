@@ -3,6 +3,7 @@ export enum TaskCycleType {
   Main = 'MAIN',
   Post = 'POST',
   SourceSet = 'SOURCE SET',
+  Composition = 'COMPOSITION',
 }
 
 export const logHeader = (message: string) => {
