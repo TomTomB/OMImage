@@ -1,6 +1,6 @@
 {
   "name": "omimage",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Image manipulation & optimization tools",
   "main": "dist/index.js",
   "scripts": {
@@ -10,10 +10,10 @@
   "author": "Tom-Rune Bornholdt",
   "license": "MIT",
   "dependencies": {
-    "sharp": "^0.26.0",
-    "typescript": "^4.0.2"
+    "sharp": "^0.27.0",
+    "typescript": "^4.1.3"
   },
   "devDependencies": {
-    "@types/sharp": "^0.25.1"
+    "@types/sharp": "^0.27.1"
   }
 }
