@@ -4,6 +4,7 @@
   "description": "Image manipulation & optimization tools",
   "main": "dist/index.js",
   "scripts": {
+    "commit": "npx git-cz",
     "tsc": "tsc",
     "start": "tsc && node dist/index.js"
   },
