@@ -1,6 +1,11 @@
 import { JpegOptions, PngOptions, WebpOptions } from 'sharp';
 import { Size } from './size.model';
 
+export interface SourceSetTask {
+  name: string;
+  params: SourceSetOptions;
+}
+
 export interface SourceSetOptions {
   outputFormats?: {
     jpg?: JPGOptions;

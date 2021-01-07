@@ -1,9 +1,8 @@
 /dist
 /node_modules
-/img/**/*.jpg
-/img/**/*.jpeg
-/img/**/*.png
-/img/**/*.pdf
+/img/*
+!/img/react.png
+!/img/webpack.png
 /out
 
 **/.DS_Store

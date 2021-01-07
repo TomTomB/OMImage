@@ -1,5 +1,10 @@
 import { Size } from './size.model';
 
+export interface CompositionTask {
+  name: string;
+  params: CompositionOptions;
+}
+
 export interface CompositionOptions {
   baseImage: {
     width: number;
