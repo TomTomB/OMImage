@@ -7,6 +7,7 @@ import {
   OMFile,
   Size,
   CompositionOptions,
+  AVIFOptions,
 } from '../../model';
 
 const toWebPicture = (
@@ -135,6 +136,50 @@ export const jpg = async (
     outputFiles.push({
       buffer,
       name: toFilename(files[i].name, 'jpg', size),
+    });
+  }
+
+  return outputFiles;
+};
+
+const toAVIF = (
+  buffers: Buffer[],
+  size: Partial<Size>,
+  options?: AVIFOptions
+) => {
+  const promises: Promise<Buffer>[] = [];
+
+  buffers.forEach((buffer) => {
+    const webpPromise = sharp(buffer)
+      .resize({ width: size.width, height: size.height, fit: 'cover' })
+      .avif(options)
+      .toBuffer();
+
+    promises.push(webpPromise);
+  });
+
+  return promises;
+};
+
+export const avif = async (
+  size: Partial<Size>,
+  files: OMFile[],
+  options?: AVIFOptions
+) => {
+  const webPictureBuffers = await Promise.all(
+    toAVIF(
+      files.map((f) => f.buffer),
+      size,
+      options
+    )
+  );
+
+  let outputFiles: OMFile[] = [];
+
+  for (const [i, buffer] of webPictureBuffers.entries()) {
+    outputFiles.push({
+      buffer,
+      name: toFilename(files[i].name, 'avif', size),
     });
   }
 

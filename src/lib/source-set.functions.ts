@@ -2,6 +2,7 @@ import { SourceSetOptions, OMFile } from '../model';
 import { logTaskEnd, logTaskStart, TaskCycleType } from './core';
 import { outputOMFilesAt } from './core/node';
 import {
+  avif,
   filterByAllowList,
   filterByIgnoreList,
   jpg,
@@ -42,6 +43,10 @@ export const createSourceSet = async ({
         const files = await webP(size, filesInner, options.outputFormats.webp);
         outputFiles.push(...files);
       }
+      if (options.outputFormats.avif) {
+        const files = await avif(size, filesInner, options.outputFormats.avif);
+        outputFiles.push(...files);
+      }
       if (options.outputFormats.png) {
         const files = await png(size, filesInner, options.outputFormats.png);
         outputFiles.push(...files);
@@ -55,6 +60,7 @@ export const createSourceSet = async ({
     for (const size of options.sizes) {
       const [webPFiles, pngFiles, jpgFiles] = await Promise.all([
         webP(size, filesInner),
+        avif(size, filesInner),
         png(size, filesInner),
         jpg(size, filesInner),
       ]);

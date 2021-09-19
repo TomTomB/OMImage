@@ -2,7 +2,7 @@ import sharp from 'sharp';
 import { CompositionOptions, OMFile, Size } from '../model';
 import { logTaskEnd, logTaskStart, TaskCycleType } from './core';
 import { outputOMFilesAt } from './core/node';
-import { compositeImageBuffers, jpg, png, webP } from './helpers';
+import { avif, compositeImageBuffers, jpg, png, webP } from './helpers';
 
 export const createComposition = async ({
   options,
@@ -75,6 +75,7 @@ export const createComposition = async ({
 
   const [webPFiles, pngFiles, jpgFiles] = await Promise.all([
     webP(compositionSize, [compositionImage]),
+    avif(compositionSize, [compositionImage]),
     png(compositionSize, [compositionImage]),
     jpg(compositionSize, [compositionJpgImage]),
   ]);

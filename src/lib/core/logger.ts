@@ -16,17 +16,20 @@ export const logVerbose = (message: string) => {
   console.log(logMessage);
 };
 
-export const logTaskStart = (type: TaskCycleType, message: string) => {
+export const logTaskStart = (
+  type: TaskCycleType,
+  message: string | unknown
+) => {
   const logMessage = `[${type}::START] ${message}`;
   console.log(logMessage);
 };
 
-export const logTaskFail = (type: TaskCycleType, message: string) => {
+export const logTaskFail = (type: TaskCycleType, message: string | unknown) => {
   const logMessage = `[${type}::FAIL] ${message}`;
   console.log(logMessage);
 };
 
-export const logTaskEnd = (type: TaskCycleType, message: string) => {
+export const logTaskEnd = (type: TaskCycleType, message: string | unknown) => {
   const logMessage = `[${type}::END] ${message}`;
   console.log(logMessage);
 };

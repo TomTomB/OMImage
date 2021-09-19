@@ -1,4 +1,4 @@
-import { JpegOptions, PngOptions, WebpOptions } from 'sharp';
+import { JpegOptions, PngOptions, WebpOptions, AvifOptions } from 'sharp';
 import { Size } from './size.model';
 
 export interface SourceSetTask {
@@ -11,6 +11,7 @@ export interface SourceSetOptions {
     jpg?: JPGOptions;
     png?: PNGOptions;
     webp?: WebPOptions;
+    avif?: AVIFOptions;
   };
   allowList?: string[];
   ignoreList?: string[];
@@ -22,3 +23,5 @@ export interface JPGOptions extends JpegOptions {}
 export interface PNGOptions extends PngOptions {}
 
 export interface WebPOptions extends WebpOptions {}
+
+export interface AVIFOptions extends AvifOptions {}
