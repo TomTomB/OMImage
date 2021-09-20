@@ -21,30 +21,30 @@ import { filterByTypes } from './lib/helpers';
 import { OMFile } from './model';
 
 const OMImage = async () => {
-  // logHeader('Starting Oh My Image');
+  logHeader('Starting Oh My Image');
 
   if (preTasks.length) {
     logHeader('Running Pre Tasks');
 
     for (const task of preTasks) {
-      // logTaskStart(TaskCycleType.Pre, task.name);
+      logTaskStart(TaskCycleType.Pre, task.name);
       try {
         await task.function(task.params);
       } catch (e) {
         logTaskFail(TaskCycleType.Pre, task.name);
         return;
       }
-      // logTaskEnd(TaskCycleType.Pre, task.name);
+      logTaskEnd(TaskCycleType.Pre, task.name);
     }
   }
 
   let allDirectories: string[];
 
   try {
-    // logTaskStart(TaskCycleType.Pre, 'Copying directories');
+    logTaskStart(TaskCycleType.Pre, 'Copying directories');
     allDirectories = await getAllDirectories(sourceDirectory);
     await ensureOutDirectoriesExists(allDirectories);
-    // logTaskEnd(TaskCycleType.Pre, 'Copying directories');
+    logTaskEnd(TaskCycleType.Pre, 'Copying directories');
   } catch (e) {
     logTaskFail(TaskCycleType.Pre, e);
     return;
@@ -106,18 +106,18 @@ const OMImage = async () => {
     logHeader('Running Post Tasks');
 
     for (const task of postTasks) {
-      // logTaskStart(TaskCycleType.Pre, task.name);
+      logTaskStart(TaskCycleType.Pre, task.name);
       try {
         await task.function(task.params);
       } catch (e) {
         logTaskFail(TaskCycleType.Pre, task.name);
         return;
       }
-      // logTaskEnd(TaskCycleType.Pre, task.name);
+      logTaskEnd(TaskCycleType.Pre, task.name);
     }
   }
 
-  // logHeader('Done!');
+  logHeader('Done!');
 };
 
 (async () => {
@@ -142,7 +142,7 @@ const OMImage = async () => {
     await ensureImgDirectoriesExists(allRemoteDirectories);
 
     for (const prefix of objects.CommonPrefixes!) {
-      // logTaskStart(TaskCycleType.Pre, `Download from S3: ${prefix.Prefix!}`);
+      logTaskStart(TaskCycleType.Pre, `Download from S3: ${prefix.Prefix!}`);
 
       const clubName = prefix.Prefix!.replace('uploads/', '').replace('/', '');
 
@@ -203,7 +203,7 @@ const OMImage = async () => {
 
       const s3Path = dir.slice(dir.indexOf('uploads'), dir.length);
 
-      // logTaskStart(TaskCycleType.Post, `Upload to S3: ${s3Path}/out`);
+      logTaskStart(TaskCycleType.Post, `Upload to S3: ${s3Path}/out`);
       try {
         const buffers = await Promise.all(filesToBuffer(files, dir));
         const filePaths = files.map((file) => `${s3Path}/out/${file.name}`);
