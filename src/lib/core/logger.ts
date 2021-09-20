@@ -11,7 +11,7 @@ export const logHeader = (message: string) => {
   console.log(logMessage);
 };
 
-export const logVerbose = (message: string) => {
+export const logVerbose = (message: string | unknown) => {
   const logMessage = `[LOGGER::INFO] ${message}`;
   console.log(logMessage);
 };

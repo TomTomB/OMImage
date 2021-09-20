@@ -1,5 +1,5 @@
 import { SourceSetOptions, OMFile } from '../model';
-import { logTaskEnd, logTaskStart, TaskCycleType } from './core';
+import { logTaskEnd, logTaskStart, logVerbose, TaskCycleType } from './core';
 import { outputOMFilesAt } from './core/node';
 import {
   avif,
@@ -31,8 +31,19 @@ export const createSourceSet = async ({
     filesInner = filterByIgnoreList(options.ignoreList, files);
   }
 
-  if (!files.length) {
-    logTaskEnd(TaskCycleType.SourceSet, taskName);
+  if (!filesInner.length && workingDirectory.includes('share')) {
+    console.log(
+      workingDirectory,
+      options,
+      files.map((f) => f.name),
+      filesInner.map((f) => f.name)
+    );
+
+    logVerbose(
+      `Source Set: Cound not find all source files at ${workingDirectory}`
+    );
+    return;
+  } else if (!filesInner.length) {
     return;
   }
 
@@ -58,13 +69,13 @@ export const createSourceSet = async ({
     }
   } else {
     for (const size of options.sizes) {
-      const [webPFiles, pngFiles, jpgFiles] = await Promise.all([
+      const [webPFiles, pngFiles, avifFiles, jpgFiles] = await Promise.all([
         webP(size, filesInner),
-        avif(size, filesInner),
         png(size, filesInner),
+        avif(size, filesInner),
         jpg(size, filesInner),
       ]);
-      outputFiles.push(...webPFiles, ...pngFiles, ...jpgFiles);
+      outputFiles.push(...webPFiles, ...pngFiles, ...avifFiles, ...jpgFiles);
     }
   }
 

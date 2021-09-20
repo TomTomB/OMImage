@@ -32,6 +32,12 @@ export const ensureDirectoriesExists = async (paths: string[]) => {
   }
 };
 
+export const ensureImgDirectoriesExists = async (paths: string[]) => {
+  for (const path of paths) {
+    await ensureDirectoryExists(path);
+  }
+};
+
 export const ensureOutDirectoriesExists = async (paths: string[]) => {
   for (const path of paths) {
     await ensureDirectoryExists(path.replace('img', 'out'));

@@ -1,6 +1,6 @@
 import sharp from 'sharp';
 import { CompositionOptions, OMFile, Size } from '../model';
-import { logTaskEnd, logTaskStart, TaskCycleType } from './core';
+import { logTaskEnd, logTaskStart, logVerbose, TaskCycleType } from './core';
 import { outputOMFilesAt } from './core/node';
 import { avif, compositeImageBuffers, jpg, png, webP } from './helpers';
 
@@ -26,11 +26,22 @@ export const createComposition = async ({
 
   for (const compositionSrcImage of options.images) {
     const sourceFile = files.find(
-      (file) => file.name === compositionSrcImage.inputFileName
+      (file) => file.name.indexOf(compositionSrcImage.inputFileName) !== -1
     );
 
-    if (!sourceFile) {
+    if (!sourceFile && workingDirectory.includes('thumbnail')) {
+      console.log(
+        workingDirectory,
+        options,
+        files.map((f) => f.name)
+      );
+
+      logVerbose(
+        `Composition: Cound not find all source files at ${workingDirectory}`
+      );
       logTaskEnd(TaskCycleType.Composition, taskName);
+      return;
+    } else if (!sourceFile) {
       return;
     }
 
@@ -52,10 +63,21 @@ export const createComposition = async ({
     });
   }
 
-  const compositionBuffer = await compositeImageBuffers(
-    srcImageBuffers,
-    options
-  );
+  let compositionBuffer: Buffer | null = null;
+
+  try {
+    compositionBuffer = await compositeImageBuffers(srcImageBuffers, options);
+  } catch (error) {
+    logVerbose(
+      `Composition: Cound not composite files!, ${workingDirectory}, ${error}`
+    );
+    return;
+  }
+
+  if (!compositionBuffer) {
+    return;
+  }
+
   const compositionImage: OMFile = {
     buffer: compositionBuffer,
     name: options.outputName,

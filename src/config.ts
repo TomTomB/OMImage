@@ -2,6 +2,11 @@ import { compositionTask, sourceSetTask } from './lib';
 import { clearOutDirectory } from './lib/core/node';
 import { Task } from './model';
 
+export const constants = {
+  awsBucket: null,
+  awsPrefix: 'uploads/',
+};
+
 /**
  * These tasks are ran one after the other at startup
  */
